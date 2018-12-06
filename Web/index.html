@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<title>PDT Mikus</title>
+
+	<!-- Bootstrap core CSS -->
+	<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+	<!-- Custom styles for this template -->
+	<link href="css/simple-sidebar.css" rel="stylesheet">
+	<link href="css/style.css" rel="stylesheet">
+	<script src='https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.js'></script>
+	<link href='https://api.mapbox.com/mapbox.js/v3.1.1/mapbox.css' rel='stylesheet' />
+	<script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+	<script src="jquery.twbsPagination.min.js"></script>
+
+	<link rel="stylesheet" href="http://code.ionicframework.com/ionicons/1.5.2/css/ionicons.min.css">
+	<link rel="stylesheet" href="vendor/leaflet.awesome-markers/dist/leaflet.awesome-markers.css">
+	<script src="vendor/leaflet.awesome-markers/dist/leaflet.awesome-markers.js"></script>
+	<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+	<div id="wrapper">
+		<!-- Sidebar -->
+		<div id="sidebar-wrapper">
+			<ul class="sidebar-nav">
+				<li class="sidebar-brand">
+					<a href="#">
+						PDT Airports
+					</a>
+				</li>
+				<li>
+					<a href="#" id="allAirports" onClick="getAllAirports()">All airports</a>
+				</li>
+				<!-- <li>
+					<a href="#" id="allHelipads" onClick="getAllHelipads()">All helipads</a>
+				</li> -->
+				<li>
+					<a href="#" id="airportSearch" data-toggle="modal" data-target="#airportSearchModal">Airport search</a>
+				</li>
+				<li>
+					<a href="#" id="aircraftRange" data-toggle="modal" data-target="#aircraftRangeModal">Aircraft range</a>
+				</li>
+				<li>
+					<a href="#" id="aviationWeather" data-toggle="modal" data-target="#aviationWeatherModal">Aviation weather</a>
+				</li>
+				<li>
+					<a href="#" id="clearMap" onClick="clearMap()">Clear map</a>
+				</li>
+			</ul>
+		</div>
+		<!-- /#sidebar-wrapper -->
+
+		<!-- Page Content -->
+		<div id="page-content-wrapper">
+			<div id="map"></div>
+		</div>
+		<!-- /#page-content-wrapper -->
+	</div>
+	<!-- /#wrapper -->
+
+	<div class="modal fade" id="airportSearchModal" tabindex="-1" role="dialog" aria-labelledby="airportSearchModalTitle" aria-hidden="true"
+	 data-backdrop="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="airportSearchModalTitle">Airport search</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body" id="modal-body">
+					<form>
+						<div class="form-group">
+							<label for="airportInput">Airport name</label>
+							<input type="text" class="form-control" id="airportInput" aria-describedby="emailHelp" placeholder="Enter airport name">
+						</div>
+						<button type="button" class="btn btn-primary" id="searchButton" onClick="airportSearchClick(airportInput.value)">Search</button>
+					</form>
+					<div id="airportsDiv">
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="aviationWeatherModal" tabindex="-1" role="dialog" aria-labelledby="aviationWeatherModalTitle"
+	 aria-hidden="true" data-backdrop="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="aviationWeatherModalTitle">Aviation weather</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body" id="aviationWeatherModalBody">
+					<form>
+						<div class="form-group">
+							<label for="sourceAirportSelect2">Source airport</label>
+							<a href="#" onclick="loadAirportsToSelect('abcde', '#sourceAirportSelect2')">a-e</a>
+							<a href="#" onclick="loadAirportsToSelect('fghij', '#sourceAirportSelect2')">f-j</a>
+							<a href="#" onclick="loadAirportsToSelect('klmno', '#sourceAirportSelect2')">k-o</a>
+							<a href="#" onclick="loadAirportsToSelect('pqrst', '#sourceAirportSelect2')">p-t</a>
+							<a href="#" onclick="loadAirportsToSelect('uvwxyz', '#sourceAirportSelect2')">u-z</a>
+							<select id="sourceAirportSelect2" onchange='validateForm2()' class="form-control" disabled required>
+								<option value="" disabled selected>Select your option</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="destinationAirportSelect2">Destination airport</label>
+							<a href="#" onclick="loadAirportsToSelect('abcde', '#destinationAirportSelect2')">a-e</a>
+							<a href="#" onclick="loadAirportsToSelect('fghij', '#destinationAirportSelect2')">f-j</a>
+							<a href="#" onclick="loadAirportsToSelect('klmno', '#destinationAirportSelect2')">k-o</a>
+							<a href="#" onclick="loadAirportsToSelect('pqrst', '#destinationAirportSelect2')">p-t</a>
+							<a href="#" onclick="loadAirportsToSelect('uvwxyz', '#destinationAirportSelect2')">u-z</a>
+							<select id="destinationAirportSelect2" onchange='validateForm2()' class="form-control" disabled required>
+								<option value="" disabled selected>Select your option</option>
+							</select>
+						</div>
+						<button type="button" class="btn btn-primary" id="weatherButton" onClick="weatherClicked(sourceAirportSelect2.options[sourceAirportSelect2.selectedIndex].value, destinationAirportSelect2.options[destinationAirportSelect2.selectedIndex].value)">Show
+							weather
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="aircraftRangeModal" tabindex="-1" role="dialog" aria-labelledby="aircraftRangeModalTitle" aria-hidden="true"
+	 data-backdrop="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="aircraftRangeModalTitle">Aircraft range</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body" id="range-modal-body">
+					<form>
+						<div class="form-group">
+							<label for="sourceAirportSelect">Source airport</label>
+							<a href="#" onclick="loadAirportsToSelect('abcde', '#sourceAirportSelect')">a-e</a>
+							<a href="#" onclick="loadAirportsToSelect('fghij', '#sourceAirportSelect')">f-j</a>
+							<a href="#" onclick="loadAirportsToSelect('klmno', '#sourceAirportSelect')">k-o</a>
+							<a href="#" onclick="loadAirportsToSelect('pqrst', '#sourceAirportSelect')">p-t</a>
+							<a href="#" onclick="loadAirportsToSelect('uvwxyz', '#sourceAirportSelect')">u-z</a>
+							<select id="sourceAirportSelect" onchange='validateForm()' class="form-control" disabled required>
+								<option value="" disabled selected>Select your option</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="destinationAirportSelect">Destination airport</label>
+							<a href="#" onclick="loadAirportsToSelect('abcde', '#destinationAirportSelect')">a-e</a>
+							<a href="#" onclick="loadAirportsToSelect('fghij', '#destinationAirportSelect')">f-j</a>
+							<a href="#" onclick="loadAirportsToSelect('klmno', '#destinationAirportSelect')">k-o</a>
+							<a href="#" onclick="loadAirportsToSelect('pqrst', '#destinationAirportSelect')">p-t</a>
+							<a href="#" onclick="loadAirportsToSelect('uvwxyz', '#destinationAirportSelect')">u-z</a>
+							<select id="destinationAirportSelect" onchange='validateForm()' class="form-control" disabled required>
+								<option value="" disabled selected>Select your option</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="airplaneSelect">Airplane</label>
+							<select id="airplaneSelect" class="form-control" onChange="airplaneClick()" disabled>
+								<option value="" disabled selected>Choose airplane</option>
+							</select>
+						</div>
+						<div id="airplaneDiv" hidden>
+							<div class="row">
+								<div class="col-md-6">
+									<img src="" class="image">
+								</div>
+								<div class="col-md-6">
+									<p>Name:</p>
+									<p> Max speed: km/h</p>
+									<p>Fuel consumption: kg/h</p>
+									<div class="form-group">
+										<label for="fuelLoadInput">Fuel load</label>
+										<input type="text" class="form-control" id="fuelLoadInput" placeholder="Enter fuel load" required>
+									</div>
+								</div>
+							</div>
+						</div>
+						<button type="button" class="btn btn-primary" id="rangeButton" onClick="rangeClicked(sourceAirportSelect.options[sourceAirportSelect.selectedIndex].value, destinationAirportSelect.options[destinationAirportSelect.selectedIndex].value)">Search</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Bootstrap core JavaScript -->
+	<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+	<script>
+
+
+
+	</script>
+
+	<script>
+		L.mapbox.accessToken = 'pk.eyJ1IjoiYnJlYWRtYW4iLCJhIjoiY2pvYWN5cmpsMGRrdTN3bzVjejY0dmw3YiJ9._oHtPhbeqmwI-5cECzraBg';
+		var map = L.mapbox.map('map', 'mapbox.streets', {
+			doubleClickZoom: false
+		}).setView([54.237933, -2.36967], 6);
+
+		var myLayer = L.geoJSON().addTo(map);
+		var myLayer2 = L.geoJSON().addTo(map);
+		var markerLayer = L.mapbox.featureLayer().addTo(map);
+		var lineLayer = L.mapbox.featureLayer().addTo(map);
+		var airportsGeoJson;
+		var selectedAirplane;
+		var percentiles = [];
+		var gradient7 = ["#F8EF68", "#ECCD5B", "#E0AC4E", "#D48A41", "#C86934", "#BC4727", "#B1261B"];
+		var markerColors = ["orange", "orange", "orange", "red", "red", "darkred", "darkred"];
+
+		var totalRecords = 0,
+			records = [],
+			displayRecords = [],
+			recPerPage = 6,
+			page = 1,
+			totalPages = 0;
+
+		var temp = 1;
+		if (temp == 0) {
+			map.on('click', function (e) {
+				alert(e.latlng);
+			});
+		}
+
+		function generate_table() {
+			var tr;
+			$('#table_body').empty();
+			for (var i = 0; i < displayRecords.length; i++) {
+				tr = $('<tr/>');
+				tr.append("<td>" + `<a href="#" onClick="selectAirport('${displayRecords[i].properties.title}')">${displayRecords[i].properties.title}</a>` + "</td>");
+				$('#table_body').append(tr);
+			}
+		}
+
+		function apply_pagination() {
+			$('#pagination').empty();
+			$('#pagination').twbsPagination({
+				totalPages: totalPages,
+				visiblePages: 6,
+				onPageClick: function (event, page) {
+					displayRecordsIndex = Math.max(page - 1, 0) * recPerPage;
+					endRec = (displayRecordsIndex) + recPerPage;
+
+					displayRecords = records.slice(displayRecordsIndex, endRec);
+					generate_table();
+				}
+			});
+		}
+
+		jQuery("#rangeButton").prop('disabled', true);
+		jQuery("#weatherButton").prop('disabled', true);
+
+		$.ajax({
+			url: "http://localhost:3000/map/getAirplaneNames",
+			dataType: "json",
+			success: function (response) {
+				if (response.length > 0) {
+					$('#airplaneSelect').prop('disabled', false);
+					$.each(response, function (index, value) {
+						$("#airplaneSelect").append(`<option 
+							id="${value.id}">${value.name}</option>`);
+					})
+				}
+			}
+		});
+
+		$.ajax({
+			url: "http://localhost:3000/map/getPercentiles",
+			dataType: "json",
+			success: function (response) {
+				if (response.length > 0) {
+					percentiles = response;
+				}
+			}
+		});
+
+		function validateForm() {
+			if ($("#fuelLoadInput").val().length > 0 && $("#sourceAirportSelect").prop("selectedIndex") != 0 && $("#destinationAirportSelect").prop("selectedIndex") != 0) {
+				$("#rangeButton").prop('disabled', false);
+			} else {
+				$("#rangeButton").prop('disabled', true);
+			}
+		}
+
+		function validateForm2() {
+			if ($("#sourceAirportSelect2").prop("selectedIndex") != 0 && $("#destinationAirportSelect2").prop("selectedIndex") != 0) {
+				$("#weatherButton").prop('disabled', false);
+			} else {
+				$("#weatherButton").prop('disabled', true);
+			}
+		}
+
+		function airplaneClick() {
+			var e = document.getElementById("airplaneSelect");
+			var airplaneId = e.options[e.selectedIndex].id;
+
+			jQuery("#airplaneDiv").prop('hidden', false);
+
+
+			$.ajax({
+				url: `http://localhost:3000/map/getAirplaneById?id=${airplaneId}`,
+				dataType: "json",
+				success: function (response) {
+					if (response.length > 0) {
+						selectedAirplane = response[0];
+						$('#airplaneDiv').empty();
+						$('#airplaneDiv').append(
+							`
+								<div class="row">
+									<div class="col-md-6">
+										<img src="${selectedAirplane.img_url}" class="image">
+									</div>
+									<div class="col-md-6">
+										<p>Name: ${selectedAirplane.name}</p>
+										<p> Max speed: ${selectedAirplane.max_speed} km/h</p>
+										<p>Fuel consumption: ${selectedAirplane.fuel_consumption} kg/h</p>
+										<div class="form-group">
+											<label for="fuelLoadInput">Fuel load in kg</label>
+											<input type="number" class="form-control" onkeyup='validateForm()' id="fuelLoadInput" placeholder="Enter fuel load" required>
+										</div>
+									</div>
+								</div>
+							`
+						);
+					}
+				}
+			});
+
+
+		}
+
+		function getAllAirports() {
+			$.ajax({
+				url: "http://localhost:3000/map/getAllAirports",
+				dataType: "json",
+				success: function (response) {
+					clearMap();
+					myLayer = L.geoJSON(response, {
+						style: function (feature) {
+							var area = feature.properties.area;
+							for (var i = 0; i < percentiles.length; i++) {
+								if (area < percentiles[i]) {
+									return {
+										color: gradient7[i],
+										fillColor: gradient7[i],
+										fillOpacity: .5
+									}
+								}
+							}
+							return {
+								color: gradient7[6],
+								fillColor: gradient7[6],
+								fillOpacity: .5
+							}
+						},
+						onEachFeature: function (feature, layer) {
+							polygon = L.polygon(feature.geometry.coordinates);
+							var center = polygon.getBounds().getCenter();
+
+							var markerStyle = getMarkerStyle(feature);;
+
+							var markerText = `
+								<h2><b>${feature.properties.title}</b></h2>
+								<p>Area: ${feature.properties.area.toFixed(2)} m<sup>2</sup></p>
+							`;
+							var marker = L.marker([center.lng, center.lat], { icon: markerStyle }).addTo(markerLayer).bindPopup(markerText).on('mouseover', function (e) {
+								marker.openPopup();
+							}).on('mouseout', function (e) {
+								marker.closePopup();
+							}).on('click', function (e) {
+								map.setView([e.latlng.lat, e.latlng.lng], 13);
+								getNearestFoodDrink(e.latlng.lat, e.latlng.lng);
+
+							});
+
+							layer.bindPopup(markerText).on('mouseover', function (e) {
+								marker.openPopup();
+							}).on('mouseout', function (e) {
+								marker.closePopup();
+							}).on('click', function (e) {
+								map.setView([e.latlng.lat, e.latlng.lng], 13);
+								getNearestFoodDrink(e.latlng.lat, e.latlng.lng);
+							});
+
+						}
+					}).addTo(myLayer);
+				}
+			});
+		};
+
+
+
+		function markerStyleForFoodDrink(feature) {
+			switch (feature.properties.amenity) {
+				case "bar":
+					return L.AwesomeMarkers.icon({
+						icon: 'glass',
+						prefix: 'fa',
+						markerColor: 'purple'
+					});
+					break;
+				case "restaurant":
+					return L.AwesomeMarkers.icon({
+						icon: 'cutlery',
+						prefix: 'fa',
+						markerColor: 'green'
+					});
+					break;
+				case "fast_food":
+					return L.AwesomeMarkers.icon({
+						icon: 'cutlery',
+						prefix: 'fa',
+						markerColor: 'green'
+					});
+					break;
+				case "food_court":
+					return L.AwesomeMarkers.icon({
+						icon: 'cutlery',
+						prefix: 'fa',
+						markerColor: 'green'
+					});
+					break;
+				case "cafe":
+					return L.AwesomeMarkers.icon({
+						icon: 'coffee',
+						prefix: 'fa',
+						markerColor: 'cadetblue'
+					});
+					break;
+			}
+		}
+
+		function getMarkerStyle(feature) {
+			var area = feature.properties.area;
+			for (var i = 0; i < percentiles.length; i++) {
+				if (area < percentiles[i]) {
+					return L.AwesomeMarkers.icon({
+						icon: 'plane',
+						prefix: 'fa',
+						markerColor: markerColors[i]
+					});
+				}
+			}
+			return L.AwesomeMarkers.icon({
+				icon: 'plane',
+				prefix: 'fa',
+				markerColor: 'darkred'
+			});
+		}
+
+		function airportSearchClick(airportInput) {
+
+			$.ajax({
+				url: `http://localhost:3000/map/getAirport?name=${encodeURI(airportInput)}`,
+				dataType: "json",
+				async: true,
+				success: function (response) {
+					airportsGeoJson = response;
+
+					$("#airportsDiv").empty();
+					if (response.features.length > 0) {
+						$("#airportsDiv").append(`
+							<br/>
+							<h5>Search results:</h5>
+							<table id="airportTable" class="table table-bordered table table-hover" cellspacing="0" width="100%">
+								<colgroup>
+									<col>
+								</colgroup>
+								<thead>
+
+								</thead>
+								<tbody id="table_body">
+								</tbody>
+							</table>
+							<div id="pager">
+								<ul id="pagination" class="pagination-sm"></ul>
+							</div>
+						`);
+						records = response.features;
+						totalRecords = records.length;
+						totalPages = Math.ceil(totalRecords / recPerPage);
+						apply_pagination();
+					}
+					else {
+						$("#airportsDiv").append(`
+							<br/>
+							<h5>No results</h5>
+						`);
+					}
+
+				}
+			});
+
+		}
+
+		function weatherClicked(sourceId, destinationId) {
+			$.ajax({
+				url: `http://localhost:3000/map/getPointsForWeather?sourceId=${sourceId}&destinationId=${destinationId}`,
+				dataType: "json",
+				success: function (response) {
+					clearMap();
+					var points = response.interpols;
+					var sourceAirport = response.sourceAirport;
+					var destinationAirport = response.destinationAirport;
+
+					var startPolygon = L.polygon(sourceAirport.features[0].geometry.coordinates);
+					var startCenter = startPolygon.getBounds().getCenter();
+					var startMarker = L.marker([startCenter.lng, startCenter.lat],{
+						icon:
+							L.AwesomeMarkers.icon({
+								icon: 'plane',
+								prefix: 'fa',
+								markerColor: 'green'
+							})}).addTo(markerLayer).bindPopup(`<h2><b>Source:</b></h2><p>${sourceAirport.features[0].properties.title}</p>`);
+					
+
+					var destPolygon = L.polygon(destinationAirport.features[0].geometry.coordinates);
+					var destCenter = destPolygon.getBounds().getCenter();
+
+					var destMarker = L.marker([destCenter.lng, destCenter.lat],{
+						icon:
+							L.AwesomeMarkers.icon({
+								icon: 'flag-checkered',
+								prefix: 'fa',
+								markerColor: 'darkred'
+							})}).addTo(markerLayer).bindPopup(`<h2><b>Destination:</b></h2><p>${destinationAirport.features[0].properties.title}</p>`);
+
+					var line = L.polyline([[startCenter.lng, startCenter.lat], [destCenter.lng, destCenter.lat]],
+						{
+							color: '#8A322E',
+							weight: 5,
+							opacity: .9,
+
+						}).addTo(lineLayer);
+						line.bindPopup(`<p>The weather is OK along this trajectory of flight.</p><img src='assets/ok.png' class='icon'>`);
+
+					if (points.length > 0) {
+						for (var i = 0; i < points.length; i++) {
+							let lat = points[i][1];
+							let lon = points[i][0];
+							$.ajax({
+								url: `http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&APPID=98c0b93642e3658574c7e839b16942b2&units=Metric`,
+								dataType: "json",
+								success: function (weather) {
+									if (!isWeatherOk(weather)) {
+										L.marker([lat, lon], {
+											icon: L.icon({
+												iconUrl: `http://openweathermap.org/img/w/${weather.weather[0].icon}.png`, iconAnchor: [30, 40]
+											})
+										}).addTo(markerLayer).bindPopup(weather.weather[0].description);
+										line.bindPopup(`<p>The flight could be dangerous due to bad weather along this trajectory of flight.</p><img src='assets/abort.png' class='icon'>`);
+									}
+								}
+							})
+						}
+					}
+					line.openPopup();
+					$('#aviationWeatherModal').modal('hide');
+				}
+			});
+		}
+
+		function isWeatherOk(weatherJSON) {
+
+			var weatherId = weatherJSON.weather[0].id;
+			if (isInInterval(weatherId, 200, 232) || isInInterval(weatherId, 500, 513) || isInInterval(weatherId, 600, 622) || weatherId == 781 || weatherId == 771 || weatherId == 762) {
+				return false;
+			}
+			return true;
+		}
+
+		function isInInterval(num, low, up) {
+			if (num >= low && num <= up) {
+				return true;
+			}
+			return false;
+		}
+
+		function rangeClicked(sourceId, destinationId) {
+
+			var fuelLoad = $("#fuelLoadInput").val();
+			var timeToConsumeAll = fuelLoad / selectedAirplane.fuel_consumption;
+			var maxDistance = selectedAirplane.max_speed * timeToConsumeAll;
+
+			$.ajax({
+				url: `http://localhost:3000/map/rangeQuery?sourceId=${sourceId}&destinationId=${destinationId}&maxDistance=${maxDistance}`,
+				dataType: "json",
+				success: function (response) {
+					clearMap();
+					poly1 = L.polygon(response.geoJSON1.features[0].geometry.coordinates);
+					var center1 = poly1.getBounds().getCenter();
+					poly2 = L.polygon(response.geoJSON2.features[0].geometry.coordinates);
+					var center2 = poly2.getBounds().getCenter();
+					var markerStart = L.marker([center1.lng, center1.lat], {
+						icon:
+							L.AwesomeMarkers.icon({
+								icon: 'plane',
+								prefix: 'fa',
+								markerColor: 'green'
+							})
+					}).addTo(markerLayer).bindPopup(`<h2><b>Source:</b></h2><p>${response.geoJSON1.features[0].properties.title}</p>`);
+
+					var markerEnd = L.marker([center2.lng, center2.lat], {
+						icon:
+							L.AwesomeMarkers.icon({
+								icon: 'flag-checkered',
+								prefix: 'fa',
+								markerColor: 'darkred'
+							})
+					}).addTo(markerLayer).bindPopup(`<h2><b>Destination:</b></h2><p>${response.geoJSON2.features[0].properties.title}</p>`);
+
+					if (response.interGeoJSON) {
+						//var marker3 = L.marker([response.interGeoJSON.features[0].geometry.coordinates[1], response.interGeoJSON.features[0].geometry.coordinates[0]]).addTo(markerLayer).bindPopup(response.geoJSON2.features[0].properties.title);
+						var line1 = L.polyline([[center1.lng, center1.lat], [response.interGeoJSON.features[0].geometry.coordinates[1], response.interGeoJSON.features[0].geometry.coordinates[0]]],
+							{
+								color: '#339532',
+								weight: 5,
+								opacity: .9
+							}).addTo(lineLayer).bindPopup(`
+								<p>This plane wouldn't make the whole flight with provided amount of fuel. </p>
+								<ul>
+									<li>Provided amount of fuel: ${fuelLoad} kg</li>
+									<li>Distance between airports: ${response.dist.toFixed(2)} km</li>
+									<li>Max flight distance: ${maxDistance.toFixed(2)} km</li>
+									<li>Remaining distance: ${(response.dist - maxDistance).toFixed(2)} km</li>
+									
+								</ul>
+								<img src="assets/abort.png" class="icon">
+							`).openPopup();
+
+						var line2 = L.polyline([[response.interGeoJSON.features[0].geometry.coordinates[1], response.interGeoJSON.features[0].geometry.coordinates[0]], [center2.lng, center2.lat],],
+							{
+								color: '#8A322E',
+								weight: 5,
+								opacity: .9,
+								dashArray: '15'
+
+							}).addTo(lineLayer).bindPopup("Distance: " + response.dist.toFixed(2) + " km");
+
+					}
+					else {
+						var timeOfTravel = response.dist / selectedAirplane.max_speed;
+						var consumed = selectedAirplane.fuel_consumption * timeOfTravel;
+
+						var text = `
+							<p>Selected plane has just enough amount of fuel to reach destination airport.</p>
+							<ul>
+									<li>Provided amount of fuel: ${fuelLoad} kg</li>
+									<li>Distance between airports: ${response.dist.toFixed(2)} km</li>
+									<li>Max flight distance: ${maxDistance.toFixed(2)} km</li>
+									<li>Remaining fuel: ${(fuelLoad - consumed).toFixed(2)} kg</li>
+								</ul>
+								<img src="assets/ok.png" class="icon">
+
+						`;
+						var polyline = L.polyline([[center1.lng, center1.lat], [center2.lng, center2.lat]],
+							{
+								color: '#339532',
+								weight: 5,
+								opacity: .9
+							}).addTo(lineLayer).bindPopup(text).openPopup();
+					}
+					$('#aircraftRangeModal').modal('hide');
+				}
+			});
+		}
+
+		function loadAirportsToSelect(interval, selectId) {
+			$(selectId).prop("disabled", true);
+			$.ajax({
+				url: `http://localhost:3000/map/getAirportsByNameInterval?interval=${interval}`,
+				dataType: "json",
+				success: function (response) {
+					$(selectId).empty();
+					$(selectId).append('<option value="" disabled selected>Select your option</option>');
+					if (response.length > 0) {
+						$.each(response, function (index, value) {
+							$(selectId).append(`<option value="${value.osm_id}">${value.name}</option>`);
+						})
+						$(selectId).prop("disabled", false);
+					}
+				}
+			});
+		}
+
+		function selectAirport(name) {
+			var feature = airportsGeoJson.features.filter(function (item) {
+				return item.properties.title == name;
+			});
+			var clone = JSON.parse(JSON.stringify(airportsGeoJson));
+			clone.features = feature;
+			clearMap();
+			var markerStyle;
+
+			myLayer = L.geoJSON(clone, {
+				style: function (feature) {
+					markerStyle = getMarkerStyle(feature);
+					var area = feature.properties.area;
+					for (var i = 0; i < percentiles.length; i++) {
+						if (area < percentiles[i]) {
+							return {
+								color: gradient7[i],
+								fillColor: gradient7[i],
+								fillOpacity: .5
+							}
+						}
+					}
+					return {
+						color: gradient7[6],
+						fillColor: gradient7[6],
+						fillOpacity: .5
+					}
+
+				},
+				onEachFeature: function (feature, layer) {
+					var markerText = `
+						<h2><b>${feature.properties.title}</b></h2>
+						<p>Area: ${feature.properties.area.toFixed(2)} m<sup>2</sup></p>
+					`;
+					polygon = L.polygon(feature.geometry.coordinates);
+					var center = polygon.getBounds().getCenter();
+					getNearestFoodDrink(center.lng, center.lat);
+					var marker = L.marker([center.lng, center.lat], { icon: markerStyle }).addTo(markerLayer).bindPopup(markerText).openPopup();
+					layer.bindPopup(markerText);
+					map.setView([center.lng, center.lat], 13);
+				}
+			}).addTo(map);
+			$('#airportSearchModal').modal('hide');
+		}
+
+		function onMouseOver(e) {
+			alert(this.getLatLng());
+		}
+
+		function getAllHelipads() {
+
+			$.ajax({
+				url: "http://localhost:3000/map/getAllHelipads",
+				dataType: "json",
+				success: function (response) {
+					clearMap();
+					myLayer = L.geoJSON(response, {
+						style: {
+							color: '#000',
+							fillColor: '#0e0e0e0',
+							fillOpacity: .6
+						},
+						onEachFeature: function (feature, layer) {
+							polygon = L.polygon(feature.geometry.coordinates);
+							var center = polygon.getBounds().getCenter();
+							var markerStyle = L.AwesomeMarkers.icon({
+								icon: 'f533',
+								//prefix: 'fa',
+								markerColor: 'blue'
+							});
+							var marker = L.marker([center.lng, center.lat], { icon: markerStyle }).addTo(markerLayer).bindPopup(feature.properties.title)
+						}
+					}).addTo(map);
+				}
+			});
+		};
+
+		function clearMap() {
+			myLayer.clearLayers();
+			myLayer2.clearLayers();
+			markerLayer.clearLayers();
+			lineLayer.clearLayers();
+			map.setView([54.237933, -2.36967], 6);
+		};
+
+		function getNearestFoodDrink(lat, lon) {
+			$.ajax({
+				url: `http://localhost:3000/map/getNearestFoodDrink?lon=${lon}&lat=${lat}`,
+				dataType: "json",
+				success: function (response) {
+					myLayer2 = L.geoJSON(response, {
+						onEachFeature: function (feature, layer) {
+							var text = `
+								<h2><b>${feature.properties.name}</b></h2>
+								<ul>
+									<li>Type: ${feature.properties.amenity}</li>
+									<li>Distance: ${feature.properties.dist.toFixed(2)} m</li>
+								</ul>
+							`;
+							L.marker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], { icon: markerStyleForFoodDrink(feature) }).addTo(markerLayer).bindPopup(text);
+						}
+					});
+				}
+			})
+		}
+	</script>
+
+</body>
+
+</html>

@@ -20,8 +20,14 @@ Build a map-based application, which lets the user see geo-based data on a map a
 
 Fill in (either in English, or in Slovak):
 
-**Application description**: `<fill in>`
+**Application description**: 
+Application provides simple queries over airports of Great Britain.
 
-**Data source**: `<fill in>`
+**Data source**: 
+- [Open Street Maps](https://www.openstreetmap.org/) - Data of Great Britain
+- [Aircraft fuel consumption table](https://www.airliners.net/forum/viewtopic.php?t=1355819) 
 
-**Technologies used**: `<fill in>`
+**Technologies used**: 
+- Mapbox.js, Leaflet, Bootstrap, JQuery
+- Node.js
+- PostgreSQL with Postgis extension
